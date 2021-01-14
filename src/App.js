@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import './App.css'
 import { Table } from './components/Table'
 import { Button } from './components/Button'
+import { firestoreStudentLogs, firestoreStudentId } from './firestore'
 import { LogsTable, Passed } from './components/LogsTable'
 import { firebaseApp } from './firebase'
 import firebase from 'firebase/app'
@@ -37,24 +38,6 @@ function App() {
     getStudents()
   }, [])
 
-  
-  // /** 生徒の追加を行う処理 */
-  // const addStudent = async () => {
-  //   if (studentName === '') return alert('Please input name')
-  //   const db = firebaseApp.firestore()
-
-  //   const data = {
-  //     name: studentName,
-  //     age: "20"
-  //   };
-
-  //   const newStudentRef = db.collection('students').doc()
-  //   const res = await newStudentRef.set(data)
-  //   console.log(res)
-  //   setStudents([...students, {id, name: studentName }])
-  //   setStudentName('')
-  // }
-
   /** 生徒の追加を行う処理 */
   const addStudent = async () => {
     if (studentName === '') return alert('Please input name')
@@ -67,7 +50,7 @@ function App() {
       name: studentName,
       age: 18,
     })
-    const historyDoc = await db.collection('logs').doc().set({name: studentName, date: currentTime, id: studentId})
+    const historyDoc = await firestoreStudentLogs.set({name: studentName, date: currentTime, id: studentId})
     console.log(newStudentDocRef)
     console.log(historyDoc)
     setStudents([...students, { id: newStudentDocRef.id, name: studentName }])
@@ -82,7 +65,7 @@ function App() {
         return student.id !== studentId
       })
     )
-    const deleteDoc = await db.collection('students').doc(studentId).delete()
+    const deleteDoc = await firestoreStudentId.delete()
     console.log(deleteDoc)
   }
   /** 生徒のアップデートを行う処理 */
@@ -103,8 +86,8 @@ function App() {
       })
     )
     
-    const historyDoc = await db.collection('logs').doc().set({name:inputVal, date:currentTime, id: studentId})
-    const updateDoc = await db.collection('students').doc(studentId).update({name:inputVal})
+    const historyDoc = await firestoreStudentLogs.set({name:inputVal, date:currentTime, id: studentId})
+    const updateDoc = await firestoreStudentId.update({name:inputVal})
     console.log(updateDoc)
     console.log(historyDoc)
   }
